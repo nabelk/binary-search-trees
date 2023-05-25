@@ -38,6 +38,50 @@ class Tree {
 
         return root;
     }
+
+    minValue(root) {
+        let minv = root.data;
+        while (root.left != null) {
+            minv = root.left.data;
+            root = root.left;
+        }
+        return minv;
+    }
+
+    deleteRec(root, key) {
+        if (root == null) {
+            return root;
+        }
+        if (key < root.data) {
+            root.left = this.deleteRec(root.left, key);
+        } else if (key > root.data) {
+            root.right = this.deleteRec(root.right, key);
+        } else {
+            if (root.left == null) {
+                return root.right;
+            }
+            if (root.right == null) {
+                return root.left;
+            }
+            root.data = this.minValue(root.right);
+            root.right = this.deleteRec(root.right, root.data);
+        }
+
+        return root;
+    }
+
+    find(value, root = this.root) {
+        if (!root.left && !root.right)
+            return `The value ${value} is not available`;
+        if (value === root.data) {
+            return root;
+        }
+
+        if (value < root.data) {
+            return this.find(value, root.left);
+        }
+        return this.find(value, root.right);
+    }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -56,5 +100,7 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 const { log } = console;
 const test = new Tree([10, 10, 6, 12, 100, 8000, 500, 8000]);
 test.insertRec(test.root, 1);
+test.deleteRec(test.root, 10);
+log(test.find(100));
 log(test.root);
 log(prettyPrint(test.root));
