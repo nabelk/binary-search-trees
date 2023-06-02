@@ -5,6 +5,27 @@ class Tree {
         this.root = this.buildTree(arr);
     }
 
+    prettyPrint(node = this.root, prefix = '', isLeft = true) {
+        if (node === null) {
+            return;
+        }
+        if (node.right !== null) {
+            this.prettyPrint(
+                node.right,
+                `${prefix}${isLeft ? '│   ' : '    '}`,
+                false
+            );
+        }
+        console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+        if (node.left !== null) {
+            this.prettyPrint(
+                node.left,
+                `${prefix}${isLeft ? '    ' : '│   '}`,
+                true
+            );
+        }
+    }
+
     sortAndRemoveDuplicate(arr) {
         let reorderArr = arr.sort((a, b) => a - b);
         reorderArr = reorderArr.filter(
@@ -41,7 +62,7 @@ class Tree {
 
     minValue(root) {
         let minv = root.data;
-        while (root.left != null) {
+        while (root.left !== null) {
             minv = root.left.data;
             root = root.left;
         }
@@ -49,7 +70,7 @@ class Tree {
     }
 
     deleteRec(root, key) {
-        if (root == null) {
+        if (root === null) {
             return root;
         }
         if (key < root.data) {
@@ -57,10 +78,10 @@ class Tree {
         } else if (key > root.data) {
             root.right = this.deleteRec(root.right, key);
         } else {
-            if (root.left == null) {
+            if (root.left === null) {
                 return root.right;
             }
-            if (root.right == null) {
+            if (root.right === null) {
                 return root.left;
             }
             root.data = this.minValue(root.right);
@@ -82,25 +103,88 @@ class Tree {
         }
         return this.find(value, root.right);
     }
-}
 
-const prettyPrint = (node, prefix = '', isLeft = true) => {
-    if (node === null) {
-        return;
+    printNode(node) {
+        console.log(node);
     }
-    if (node.right !== null) {
-        prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+
+    levelOrder(root = [this.root], result = [], callback = null) {
+        if (!root) {
+            return [];
+        }
+
+        const queue = root;
+        if (queue.length === 0) return result;
+
+        const node = queue.shift();
+        result.push(node.data);
+        if (node.left) queue.push(node.left);
+        if (node.right) queue.push(node.right);
+        if (callback) callback(node);
+
+        return this.levelOrder(queue, result);
     }
-    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
-    if (node.left !== null) {
-        prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+
+    preOrder(root = this.root, callback = null) {
+        const result = [];
+        if (!this.root) return result;
+        function preOrderRecursive(node) {
+            if (node) {
+                result.push(node.data);
+                if (callback) callback(node);
+                preOrderRecursive(node.left);
+                preOrderRecursive(node.right);
+            }
+        }
+        preOrderRecursive(root);
+
+        return result;
     }
-};
+
+    inOrder(root = this.root, callback = null) {
+        const result = [];
+        if (!this.root) return result;
+
+        function inOrderRecursive(node) {
+            if (!node) return;
+            inOrderRecursive(node.left);
+            result.push(node.data);
+            if (callback) callback(node);
+            inOrderRecursive(node.right);
+        }
+        inOrderRecursive(root);
+        return result;
+    }
+
+    postOrder(root = this.root, callback = null) {
+        const result = [];
+        if (!this.root) return result;
+
+        function postOrderRecursive(node) {
+            if (!node) return;
+            postOrderRecursive(node.left);
+            postOrderRecursive(node.right);
+            result.push(node.data);
+            if (callback) callback(node);
+        }
+        postOrderRecursive(root);
+        return result;
+    }
+}
 
 const { log } = console;
 const test = new Tree([10, 10, 6, 12, 100, 8000, 500, 8000]);
-test.insertRec(test.root, 1);
+const test2 = new Tree([1, 2, 3, 4, 5, 6, 7]);
+test.insertRec(test.root, 13);
+test.insertRec(test.root, 8);
+test.insertRec(test.root, 5);
+test.insertRec(test.root, 9000);
 test.deleteRec(test.root, 10);
 log(test.find(100));
-log(test.root);
-log(prettyPrint(test.root));
+log(test.levelOrder());
+log(test.preOrder());
+log(test.inOrder());
+log(test.postOrder());
+log(test2.postOrder());
+test.prettyPrint();
+test2.prettyPrint();
