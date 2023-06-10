@@ -170,10 +170,59 @@ class Tree {
         postOrderRecursive(root);
         return result;
     }
+
+    height(root = this.root) {
+        if (root === null) {
+            return -1;
+        }
+        const leftHeight = this.height(root.left);
+        const rightHeight = this.height(root.right);
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    depth(root = this.root, value = null) {
+        if (!root) return null;
+        let currentNode = root;
+        let depthToValue = 0;
+        while (currentNode) {
+            if (currentNode.data === value) break;
+            if (value < currentNode.data) {
+                currentNode = currentNode.left;
+            } else {
+                currentNode = currentNode.right;
+            }
+            depthToValue++;
+        }
+        if (!currentNode) return null;
+
+        return depthToValue;
+    }
+
+    isBalanced(node = this.root) {
+        if (node == null) return true;
+
+        const lh = this.height(node.left);
+        const rh = this.height(node.right);
+
+        if (
+            Math.abs(lh - rh) <= 1 &&
+            this.isBalanced(node.left) === true &&
+            this.isBalanced(node.right) === true
+        )
+            return true;
+
+        return false;
+    }
+
+    reBalanced() {
+        if (this.root === null) return;
+        const sorted = this.inOrder(this.root);
+        this.root = this.buildTree(sorted);
+    }
 }
 
 const { log } = console;
-const test = new Tree([10, 10, 6, 12, 100, 8000, 500, 8000]);
+const test = new Tree([10, 10, 6, 12, 100, 8000, 4, 3, 9, 2, 0, 7]);
 const test2 = new Tree([1, 2, 3, 4, 5, 6, 7]);
 test.insertRec(test.root, 13);
 test.insertRec(test.root, 8);
@@ -186,5 +235,9 @@ log(test.preOrder());
 log(test.inOrder());
 log(test.postOrder());
 log(test2.postOrder());
+log(`Height of BST: ${test.height()} `);
+log(test.depth(test.root, 8));
+log(test.isBalanced());
+log(test.reBalanced());
 test.prettyPrint();
 test2.prettyPrint();
