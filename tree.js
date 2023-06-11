@@ -241,3 +241,22 @@ log(test.isBalanced());
 log(test.reBalanced());
 test.prettyPrint();
 test2.prettyPrint();
+
+/* BST Test */
+
+let arrTree = [];
+// Add random numbers to array tree
+for (let i = 0; i <= 10; i++) {
+    arrTree.push(Math.floor(Math.random() * 101));
+}
+arrTree = new Tree(arrTree); // Build the tree
+log(arrTree.isBalanced()); // Confirm the tree is balanced
+
+//  Unbalance the tree by adding numbers > 100 into the array
+for (let z = 0; z <= 10; z++) {
+    arrTree.insertRec(arrTree.root, Math.floor(Math.random() * 101) + 100);
+}
+
+log(arrTree.isBalanced()); // Confirm the tree is unbalanced
+arrTree.reBalanced(); // Rebalance the bree
+log(arrTree.isBalanced()); // Confirm the tree is balanced
